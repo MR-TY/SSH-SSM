@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ty.dao.EmployeeMapper">
+	<!--Employee findOneEmpByEid(int geteId); -->
+	<select id="findOneEmpByEid" resultType="employee">
+		select * from
+		tbl_employee where eId = #{geteId}
+	</select>
+	<!--List<Employee> findAllEmps(); -->
+	<resultMap type="com.ty.entity.Employee" id="employeeMap">
+		<id column="eId" property="eId" />
+		<result column="eName" property="eName" />
+		<result column="idCardNum" property="idCardNum" />
+		<result column="gender" property="gender" />
+		<result column="politics" property="politics" />
+		<result column="address" property="address" />
+		<result column="birthDay" property="birthDay" />
+		<result column="remark" property="remark" />
+		<association property="dept" javaType="dept">
+			<id column="dId" property="dId" />
+			<result column="dName" property="dName" />
+		</association>
+		<association property="staff" javaType="staff">
+			<id column="staffId" property="staffId" />
+			<result column="staffName" property="staffName" />
+		</association>
+
+	</resultMap>
+	<select id="findAllEmps" resultMap="employeeMap">
+		select * from
+		tbl_employee,tbl_staff,tbl_dept
+	</select>
+
+	<!--void saveOneEmp1(Employee employee); ,#{politics},#{email},typeHandler="com.ty.mybatise_num.EnumStatusHandler",#{birthDay},#{dept},#{staff},#{phoneNum} -->
+	<insert id="saveOneEmp1" parameterType="employee">
+		insert into
+		tbl_employee(eName,idCardNum,address,gender,politics,birthDay)
+		values(#{eName},#{idCardNum},#{address},#{gender},#{politics},#{birthDay})
+	</insert>
+
+	<!--void deleteEmps(@Param("ids")int[] ids); -->
+	<delete id="deleteEmps" parameterType="int">
+		delete from tbl_employee where eId in
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- List<Employee> findEmpsByLike(@Param("dId1")int dId1, @Param("staffId1")int 
+		staffId1, @Param("genderId")int genderId, @Param("eName")String eName); -->
+	<resultMap type="com.ty.entity.Employee" id="employeeMap1">
+		<id column="eId" property="eId" />
+		<result column="eName" property="eName" />
+		<result column="idCardNum" property="idCardNum" />
+		<result column="gender" property="gender" />
+		<result column="politics" property="politics" />
+		<result column="address" property="address" />
+		<result column="birthDay" property="birthDay" />
+		<result column="remark" property="remark" />
+		<association property="dept" javaType="dept">
+			<id column="dId" property="dId" />
+			<result column="dName" property="dName" />
+		</association>
+		<association property="staff" javaType="staff">
+			<id column="staffId" property="staffId" />
+			<result column="staffName" property="staffName" />
+		</association>
+	</resultMap>
+	<select id="findEmpsByLike" resultMap="employeeMap1">
+		select * from tbl_employee
+		<where>
+			<if test="eName!=''">
+				eName like #{param3}
+			</if>
+			<if test="dId!=0">
+				and dId = #{param1}
+			</if>
+			<if test="gender!=0">
+				and gender = #{param2}
+			</if>
+		</where>
+	</select>
+</mapper>

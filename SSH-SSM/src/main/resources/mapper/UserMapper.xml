@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ty.dao.UserMapper">
+	<!--根据用户名和密码查找用户 -->
+	<select id="findUserByLoginNameAndPwd" resultType="com.ty.entity.User">
+		select * from
+		tbl_user where uloginname= #{uloginName} and upwd = #{upwd}
+	</select>
+
+	<!--通过用户名发现密码 -->
+	<select id="findPwdByuLoginName" resultType="string">
+		select upwd from
+		tbl_user where uloginname= #{uloginName}
+	</select>
+
+	<!--发现全部的用户 -->
+	<resultMap type="com.ty.entity.User" id="userMap">
+		<id column="eId" property="eId" />
+		<result column="uLoginName" property="uLoginName" />
+		<result column="uPwd" property="uPwd" />
+		<result column="state" property="state" />
+		<result column="uCreateTime" property="uCreateTime" />
+		<association property="employee" javaType="employee">
+			<id column="eId" property="eId" />
+			<result column="eName" property="eName" />
+		</association>
+	</resultMap>
+	<select id="findAllUsers" resultMap="userMap">
+		select * from
+		tbl_user,tbl_employee
+	</select>
+
+	<!--通过登录名和账号模糊查询用户 -->
+	<resultMap type="com.ty.entity.User" id="userMap1">
+		<id column="eId" property="eId" />
+		<result column="uLoginName" property="uLoginName" />
+		<result column="uPwd" property="uPwd" />
+		<result column="state" property="state" />
+		<result column="uCreateTime" property="uCreateTime" />
+		<association property="employee" javaType="employee">
+			<id column="eId" property="eId" />
+			<result column="eName" property="eName" />
+		</association>
+	</resultMap>
+	<select id="findUsersByNameAndState" resultMap="userMap1">
+		select * from tbl_user u,tbl_employee e
+		<where>
+			<if test="uLoginName!=null">
+				u.uloginname like #{uLoginName}
+			</if>
+			<if test="state!=null">
+				and u.state = #{state}
+			</if>
+		</where>
+	</select>
+
+	<!--通过id发现一个用户 -->
+	<resultMap type="com.ty.entity.User" id="userMap2">
+		<id column="eId" property="eId" />
+		<result column="uLoginName" property="uLoginName" />
+		<result column="uPwd" property="uPwd" />
+		<result column="state" property="state" />
+		<result column="uCreateTime" property="uCreateTime" />
+		<association property="employee" javaType="employee">
+			<id column="eId" property="eId" />
+			<result column="eName" property="eName" />
+		</association>
+	</resultMap>
+	<select id="findOneUserById" resultMap="userMap2">
+		select * from tbl_user
+		u,tbl_employee where u.eId = #{eId}
+	</select>
+
+	<!--更新用户 -->
+	<update id="updateUser" parameterType="user">
+		update tbl_user set
+		uLoginName=#{uLoginName}, uPwd=#{uPwd},state=#{state}
+		where eId=#{eId}
+	</update>
+	
+	<!--通过id发现密码  -->
+	<select id="findPwd" resultType="string">
+		select uPwd from tbl_user
+		where eId=#{eId}
+	</select>
+	
+	<!--删除用户  -->
+	<delete id="deleteUsersByIds" parameterType="int">
+		delete from tbl_user where eId in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!--	void saveUser(User user);  -->
+	<insert id="saveUser" parameterType="user">
+		insert into tbl_user(eId,uLoginName,uPwd,state,uCreateTime) 
+		values(#{eId},#{uLoginName},#{uPwd},#{state},#{uCreateTime})
+	</insert> 
+</mapper>

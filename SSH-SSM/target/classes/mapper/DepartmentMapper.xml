@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ty.dao.DepartmentMapper">
+	<!--查询全部的部门 -->
+	<select id="findDeptsAll" resultType="dept">
+		select * from tbl_dept
+	</select>
+	<!-- 保存部门 -->
+	<insert id="saveOneDept" parameterType="dept">
+		insert into tbl_dept(dName,ddetail) values(#{dName},#{dDetail})
+	</insert>
+	<!--删除部门 -->
+	<delete id="deleteDeptsByIds" parameterType="int">
+		delete from tbl_dept where dId in
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!--发现一个项目 -->
+	<select id="findOneDeptById" resultType="dept">
+		select * from tbl_dept
+		where dId = #{dId}
+	</select>
+
+	<!--更新部门 -->
+	<update id="updateOneDept" parameterType="dept">
+		update tbl_dept set
+		dName=#{dName}, dDetail=#{dDetail}
+		where dId=#{dId}
+	</update>
+
+	<!--通过题目模糊查询部门 -->
+	<select id="findDeptsLikeByName" resultType="dept">
+		select * from
+		tbl_dept
+		where dName like #{dName}
+	</select>
+
+	<!--通过部门的id发现员工 -->
+	<select id="findEmpEidByDid" resultType="int">
+		select EID
+		from tbl_employee
+		WHERE dId = #{did}
+	</select>
+	
+	<!-- 设置员工中的部门id为null-->
+	<update id="updateDidsByEmpId" parameterType="int">
+		update tbl_employee set
+		dId=null
+		where eId=#{i}
+	</update>
+</mapper>

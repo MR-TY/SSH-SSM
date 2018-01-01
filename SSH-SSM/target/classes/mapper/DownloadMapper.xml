@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ty.dao.DownloadMapper">
+	<!--发现全部的用户 -->
+	<resultMap type="com.ty.entity.DownLoad" id="downloadMap">
+		<!--发现全部的文件 -->
+		<id column="downloadId" property="downloadId" />
+		<result column="downloadTitle" property="downloadTitle" />
+		<result column="downloadDes" property="downloadDes" />
+		<result column="downloadCreateTime" property="downloadCreateTime" />
+		<association property="employee" javaType="employee">
+			<id column="eId" property="eId" />
+			<result column="eName" property="eName" />
+		</association>
+	</resultMap>
+	<select id="findAllFile" resultMap="downloadMap">
+		select * from
+		tbl_doenload,tbl_employee
+	</select>
+
+	<!--根据id发现一个文件 -->
+	<select id="findOneFile" resultType="downLoad">
+		select * from tbl_doenload
+		where downloadId = #{downloadId}
+	</select>
+
+	<!--保存文件 -->
+	<insert id="saveFile" parameterType="downLoad">
+		insert into
+		tbl_doenload(downloadTitle,downloadCreateTime,eId,downloadDes,downloadPath)
+		values(#{downloadTitle},#{downloadCreateTime},#{eId},#{downloadDes},#{downloadPath})
+	</insert>
+
+	<!--更新文件 -->
+	<update id="updateFile" parameterType="download">
+		update tbl_doenload set
+		downloadTitle=#{downloadTitle}, downloadDes=#{downloadDes},
+		downloadCreateTime=#{downloadCreateTime}
+		where downloadId=#{downloadId}
+	</update>
+
+	<!--删除文件 -->
+	<delete id="deleteFileById" parameterType="int">
+		delete from tbl_doenload where downloadId in
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!--void findPathById(int id);  -->
+	<select id="findPathById" resultType="string">
+		select d.downloadPath from tbl_doenload d where d.downloadId=#{downloadId}
+	</select>
+	
+	<!--List<DownLoad> findFileByLike(String downloadTitle);  -->
+	<select id="findFileByLike" resultType="download">
+		select * from
+		tbl_doenload
+		where downloadTitle like #{downloadTitle}
+	</select>
+</mapper>
